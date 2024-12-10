@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.4
 // @description  Adds a "Print" button to the QuickBooks Invoice page with dynamic txnId
-// @author       Your Name
+// @author       Raj - Gorkhari
 // @match        https://qbo.intuit.com/app/invoice*
 // @grant        none
 // ==/UserScript==
@@ -30,7 +30,7 @@
             printButton.textContent = 'Print';
             printButton.style.position = 'fixed';
             printButton.style.bottom = '8px';
-            printButton.style.left = '660px';
+            printButton.style.left = '500px';
             printButton.style.padding = '10px 20px';
             printButton.style.backgroundColor = '#4CAF50';
             printButton.style.color = 'white';
