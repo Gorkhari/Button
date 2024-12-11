@@ -32,7 +32,7 @@
             printButton.style.bottom = '8px';
             printButton.style.left = '500px';
             printButton.style.padding = '10px 20px';
-            printButton.style.backgroundColor = 'red';
+            printButton.style.backgroundColor = 'green';
             printButton.style.color = 'white';
             printButton.style.border = 'none';
             printButton.style.borderRadius = '5px';
@@ -42,19 +42,19 @@
 
             // Add click event listener to the button
             printButton.addEventListener('click', () => {
-                const billingAddress = document.querySelector('textarea.topFieldInput.address')?.value || 'N/A';
-                const shippingAddress = document.getElementById('shippingAddress')?.value || 'N/A';
+                const billingAddress = document.querySelector('textarea.topFieldInput.address')?.value || '';
+                const shippingAddress = document.getElementById('shippingAddress')?.value || '';
                 const referenceNumberElement = document.querySelector('[data-qbo-bind="text: referenceNumber"]');
-                const invoiceNumber = referenceNumberElement?.textContent?.trim() || 'N/A';
+                const invoiceNumber = referenceNumberElement?.textContent?.trim() || '';
                 const invoiceDateInput = document.getElementById('uniqName_8_5');
-                const invoiceDate = invoiceDateInput?.value || 'N/A';
+                const invoiceDate = invoiceDateInput?.value || '';
 
                 // Get form details
                 const formElement = document.querySelector('.custom-form');
                 const formFields = Array.from(formElement.querySelectorAll('.custom-form-field'));
-                const orderNumber = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'ORDER NUMBER')?.querySelector('input')?.value || 'N/A';
-                const jobName = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'JOB NAME')?.querySelector('input')?.value || 'N/A';
-                const phoneNumber = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'Phone')?.querySelector('input')?.value || 'N/A';
+                const orderNumber = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'ORDER NUMBER')?.querySelector('input')?.value || '';
+                const jobName = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'JOB NAME')?.querySelector('input')?.value || '';
+                const phoneNumber = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'Phone')?.querySelector('input')?.value || '';
 
                 // Generate product list as a table
                 let productTable = `
@@ -79,7 +79,7 @@
                     const sku = row.querySelector('.field-sku')?.textContent.trim() || '';
                     const quantity = row.querySelector('.field-quantity-inner')?.textContent.trim() || '';
                     productTable += `
-                        <tr style="margin-bottom: 10px; height: 40px;">
+                        <tr style="margin-bottom: 5px; height: 30px;">
                             <td style="padding: 5px 10px;">${finalProductName}</td>
                             <td style="padding: 5px 10px;">${sku}</td>
                             <td style="padding: 5px 10px;">${quantity}</td>
@@ -95,12 +95,12 @@
                     <head>
 <style>
          .product-table tr {
-                margin-bottom: 10px; /* Creates space between rows */
-                height: 40px;       /* Optional: Ensures consistent row height */
+                margin-bottom: 10px;
+                height: 30px;
             }
-            
+
             .product-table td {
-                padding: 5px 10px;  /* Adds space inside cells */
+                padding: 5px 10px;
             }
 
         body {
