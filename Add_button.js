@@ -32,7 +32,7 @@
             printButton.style.bottom = '8px';
             printButton.style.left = '500px';
             printButton.style.padding = '10px 20px';
-            printButton.style.backgroundColor = 'green';
+            printButton.style.backgroundColor = 'red';
             printButton.style.color = 'white';
             printButton.style.border = 'none';
             printButton.style.borderRadius = '5px';
