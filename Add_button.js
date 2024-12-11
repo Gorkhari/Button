@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Add Print Button to QuickBooks Invoice
+// @name         Add Print and Pick Slip Buttons to QuickBooks Invoice
 // @namespace    http://tampermonkey.net/
-// @version      1.4
-// @description  Adds a "Print" button to the QuickBooks Invoice page with dynamic txnId
+// @version      1.6
+// @description  Adds "Print" and "Pick Slip" buttons to the QuickBooks Invoice page with dynamic txnId
 // @author       Raj - Gorkhari
 // @match        https://qbo.intuit.com/app/invoice*
 // @grant        none
@@ -17,81 +17,124 @@
         return url.startsWith("https://qbo.intuit.com/app/invoice");
     }
 
-    // Run the script only if the current page is an invoice page
+    // Function to create a button
+    function createButton(id, text, clickHandler) {
+        const button = document.createElement('button');
+        button.id = id;
+        button.textContent = text;
+        button.style.position = 'fixed';
+        button.style.bottom = '8px';
+        button.style.left = id === 'custom-print-button' ? '500px' : '600px';
+        button.style.padding = '10px 20px';
+        button.style.backgroundColor = 'green';
+        button.style.color = 'white';
+        button.style.border = 'none';
+        button.style.borderRadius = '5px';
+        button.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
+        button.style.cursor = 'pointer';
+        button.style.zIndex = '1000';
+        button.addEventListener('click', clickHandler);
+        return button;
+    }
+
     if (isInvoicePage()) {
-        // Wait for the page to fully load before adding the button
         window.addEventListener('load', () => {
-            // Check if the button already exists to avoid duplication
-            if (document.getElementById('custom-print-button')) return;
+            if (document.getElementById('custom-print-button') || document.getElementById('custom-pick-slip-button')) return;
 
-            // Create the button element
-            const printButton = document.createElement('button');
-            printButton.id = 'custom-print-button';
-            printButton.textContent = 'Print';
-            printButton.style.position = 'fixed';
-            printButton.style.bottom = '8px';
-            printButton.style.left = '500px';
-            printButton.style.padding = '10px 20px';
-            printButton.style.backgroundColor = 'green';
-            printButton.style.color = 'white';
-            printButton.style.border = 'none';
-            printButton.style.borderRadius = '5px';
-            printButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
-            printButton.style.cursor = 'pointer';
-            printButton.style.zIndex = '1000';
+            const printButtonClickHandler = () => generateProductTable(false);
+            const pickSlipButtonClickHandler = () => generateProductTable(true);
 
-            // Add click event listener to the button
-            printButton.addEventListener('click', () => {
-                const billingAddress = document.querySelector('textarea.topFieldInput.address')?.value || '';
-                const shippingAddress = document.getElementById('shippingAddress')?.value || '';
-                const referenceNumberElement = document.querySelector('[data-qbo-bind="text: referenceNumber"]');
-                const invoiceNumber = referenceNumberElement?.textContent?.trim() || '';
-                const invoiceDateInput = document.getElementById('uniqName_8_5');
-                const invoiceDate = invoiceDateInput?.value || '';
+            const printButton = createButton('custom-print-button', 'Print', printButtonClickHandler);
+            document.body.appendChild(printButton);
 
-                // Get form details
-                const formElement = document.querySelector('.custom-form');
-                const formFields = Array.from(formElement.querySelectorAll('.custom-form-field'));
-                const orderNumber = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'ORDER NUMBER')?.querySelector('input')?.value || '';
-                const jobName = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'JOB NAME')?.querySelector('input')?.value || '';
-                const phoneNumber = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'Phone')?.querySelector('input')?.value || '';
+            const pickSlipButton = createButton('custom-pick-slip-button', 'Pick Slip', pickSlipButtonClickHandler);
+            document.body.appendChild(pickSlipButton);
+        });
+    }
 
-                // Generate product list as a table
-                let productTable = `
-                    <table class="product-table">
-                        <thead style="background:lightgrey; margin-bottom:5px;">
-                            <tr>
-                                <th>Product Name</th>
-                                <th>SKU</th>
-                                <th>Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+    function generateProductTable(combineQuantities) {
+        const rows = document.querySelectorAll('.dgrid-row');
+        const billingAddress = document.querySelector('textarea.topFieldInput.address')?.value || '';
+        const shippingAddress = document.getElementById('shippingAddress')?.value || '';
+        const referenceNumberElement = document.querySelector('[data-qbo-bind="text: referenceNumber"]');
+        const invoiceNumber = referenceNumberElement?.textContent?.trim() || '';
+        const invoiceDateInput = document.getElementById('uniqName_8_5');
+        const invoiceDate = invoiceDateInput?.value || '';
 
-                const rows = document.querySelectorAll('.dgrid-row');
-                rows.forEach(row => {
-                    const productNameElement = row.querySelector('.itemColumn');
-                    const descriptionElement = row.querySelector('.field-description div');
-                    const productName1 = productNameElement?.textContent.trim() || "";
-                    const description = descriptionElement?.textContent.trim() || "";
-                    const finalProductName = productName1 || description;
-                    const sku = row.querySelector('.field-sku')?.textContent.trim() || '';
-                    const quantity = row.querySelector('.field-quantity-inner')?.textContent.trim() || '';
+        // Get form details
+        const formElement = document.querySelector('.custom-form');
+        const formFields = Array.from(formElement.querySelectorAll('.custom-form-field'));
+        const orderNumber = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'ORDER NUMBER')?.querySelector('input')?.value || '';
+        const jobName = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'JOB NAME')?.querySelector('input')?.value || '';
+        const phoneNumber = formFields.find(field => field.querySelector('label')?.textContent.trim() === 'Phone')?.querySelector('input')?.value || '';
+        const skuMap = new Map();
+        let productTable = '';
+        rows.forEach(row => {
+            const productNameElement = row.querySelector('.itemColumn');
+            const descriptionElement = row.querySelector('.field-description div');
+            const productName = productNameElement?.textContent.trim() || "";
+            const description = descriptionElement?.textContent.trim() || "";
+            const sku = row.querySelector('.field-sku')?.textContent.trim() || "";
+            const quantityText = row.querySelector('.field-quantity-inner')?.textContent.trim() || "";
+            const quantity = parseInt(quantityText, 10) || '';
+
+            if (combineQuantities) {
+                // Combine quantities for Pick Slip
+                if (skuMap.has(sku)) {
+                    const existing = skuMap.get(sku);
+                    existing.quantity += quantity;
+                } else {
+                    skuMap.set(sku, { productName, quantity });
+                }
+            } else {
+                // Print logic: Include description only if both product name and SKU are missing
+                const displayName = productName || (sku ? '' : description);
+
+                if (displayName || sku) {
                     productTable += `
                         <tr style="margin-bottom: 5px; height: 30px;">
-                            <td style="padding: 5px 10px;">${finalProductName}</td>
+                            <td style="padding: 5px 10px;">${displayName}</td>
                             <td style="padding: 5px 10px;">${sku}</td>
                             <td style="padding: 5px 10px;">${quantity}</td>
                         </tr>
                     `;
-                });
+                }
+            }
+        });
 
-                productTable += '</tbody></table>';
+        if (combineQuantities) {
+            // Generate table for Pick Slip
+            skuMap.forEach((value, key) => {
+                productTable += `
+                    <tr style="margin-bottom: 5px; height: 30px;">
+                        <td style="padding: 5px 10px;">${value.productName}</td>
+                        <td style="padding: 5px 10px;">${key}</td>
+                        <td style="padding: 5px 10px;">${value.quantity}</td>
+                    </tr>
+                `;
+            });
+        }
 
-                // Use your provided print layout
-                const printLayout = `
-                    <html>
+        if (productTable) {
+            productTable = `
+                <table class="product-table">
+                    <thead style="background:lightgrey; margin-bottom:5px;">
+                        <tr>
+                            <th>Product Name</th>
+                            <th>SKU</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${productTable}
+                    </tbody>
+                </table>
+            `;
+        } else {
+            productTable = '<p>No valid products found.</p>';
+        }
+const printLayout = `
+           <html>
                     <head>
 <style>
          .product-table tr {
@@ -226,16 +269,11 @@
     </div>
 </body>
 </html>
-                `;
+        `;
 
-                const newWindow = window.open('', '_blank', 'width=800,height=600');
-                newWindow.document.write(printLayout);
-                newWindow.document.close();
-                newWindow.print();
-            });
-
-            // Add the button to the page
-            document.body.appendChild(printButton);
-        });
+        const newWindow = window.open('', '_blank', 'width=800,height=600');
+        newWindow.document.write(printLayout);
+        newWindow.document.close();
+        newWindow.print();
     }
 })();
