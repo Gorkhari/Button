@@ -24,7 +24,7 @@
         button.textContent = text;
         button.style.position = 'fixed';
         button.style.bottom = '8px';
-        button.style.left = id === 'custom-print-button' ? '500px' : '600px';
+        button.style.left = id === 'custom-print-button' ? '400px' : '500px';
         button.style.padding = '10px 20px';
         button.style.backgroundColor = 'green';
         button.style.color = 'white';
