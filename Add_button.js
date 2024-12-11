@@ -79,10 +79,10 @@
                     const sku = row.querySelector('.field-sku')?.textContent.trim() || '';
                     const quantity = row.querySelector('.field-quantity-inner')?.textContent.trim() || '';
                     productTable += `
-                        <tr>
-                            <td>${finalProductName}</td>
-                            <td>${sku}</td>
-                            <td>${quantity}</td>
+                        <tr style="margin-bottom: 10px; height: 40px;">
+                            <td style="padding: 5px 10px;">${finalProductName}</td>
+                            <td style="padding: 5px 10px;">${sku}</td>
+                            <td style="padding: 5px 10px;">${quantity}</td>
                         </tr>
                     `;
                 });
@@ -94,6 +94,15 @@
                     <html>
                     <head>
 <style>
+         .product-table tr {
+                margin-bottom: 10px; /* Creates space between rows */
+                height: 40px;       /* Optional: Ensures consistent row height */
+            }
+            
+            .product-table td {
+                padding: 5px 10px;  /* Adds space inside cells */
+            }
+
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
