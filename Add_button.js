@@ -1,22 +1,63 @@
 // ==UserScript==
 // @name         Add Print and Pick Slip Buttons to QuickBooks Invoice
 // @namespace    http://tampermonkey.net/
-// @version      1.6
-// @description  Adds "Print" and "Pick Slip" buttons to the QuickBooks Invoice page with dynamic txnId
+// @version      1.8
+// @description  Adds "Print" and "Pick Slip" buttons to QuickBooks Invoice page
 // @author       Raj - Gorkhari
-// @match        https://qbo.intuit.com/app/invoice*
+// @match        https://qbo.intuit.com/*
+// @include      https://qbo.intuit.com/app/invoice?*
+// @run-at       document-idle
 // @grant        none
 // ==/UserScript==
 
-(function () {
+(function() {
     'use strict';
-
-    // Function to check if the current page is an invoice page
+    // More robust URL and page detection
     function isInvoicePage() {
         const url = window.location.href;
-        return url.startsWith("https://qbo.intuit.com/app/invoice");
+        const invoiceSelectors = [
+            '.invoice-details-container',
+            '[data-qbo-bind="text: referenceNumber"]',
+            '.dgrid-row .itemColumn'
+        ];
+        return (
+            url.includes('qbo.intuit.com/app/invoice?') ||
+            url.includes('/invoice?txnId') ||
+            invoiceSelectors.some(selector => document.querySelector(selector) !== null)
+        );
+    }
+    // Delay initialization to ensure page is fully loaded
+    function safeInitialize() {
+        if (isInvoicePage()) {
+            // Add a small delay to ensure all elements are rendered
+            setTimeout(addButtons, 1500);
+        }
+    }
+    // Use multiple observation methods
+    function setupObservers() {
+        // History API listener
+        (function(history){
+            const pushState = history.pushState;
+            history.pushState = function(state) {
+                const result = pushState.apply(history, arguments);
+                window.dispatchEvent(new Event('urlchange'));
+                return result;
+            };
+        })(window.history);
+        // Event listeners
+        window.addEventListener('urlchange', safeInitialize);
+        window.addEventListener('popstate', safeInitialize);
+        // Mutation observer
+        const observer = new MutationObserver(safeInitialize);
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     }
 
+    // Initial setup
+    setupObservers();
+    safeInitialize();
     // Function to create a button
     function createButton(id, text, clickHandler) {
         const button = document.createElement('button');
@@ -37,19 +78,15 @@
         return button;
     }
 
-    if (isInvoicePage()) {
-        window.addEventListener('load', () => {
-            if (document.getElementById('custom-print-button') || document.getElementById('custom-pick-slip-button')) return;
-
-            const printButtonClickHandler = () => generateProductTable(false);
-            const pickSlipButtonClickHandler = () => generateProductTable(true);
-
-            const printButton = createButton('custom-print-button', 'Print', printButtonClickHandler);
-            document.body.appendChild(printButton);
-
-            const pickSlipButton = createButton('custom-pick-slip-button', 'Pick Slip', pickSlipButtonClickHandler);
-            document.body.appendChild(pickSlipButton);
-        });
+    // Function to add the buttons to the page
+    function addButtons() {
+        if (document.getElementById('custom-print-button') || document.getElementById('custom-pick-slip-button')) return;
+        const printButtonClickHandler = () => generateProductTable(false);
+        const pickSlipButtonClickHandler = () => generateProductTable(true);
+        const printButton = createButton('custom-print-button', 'Print', printButtonClickHandler);
+        document.body.appendChild(printButton);
+        const pickSlipButton = createButton('custom-pick-slip-button', 'Pick Slip', pickSlipButtonClickHandler);
+        document.body.appendChild(pickSlipButton);
     }
 
     function generateProductTable(combineQuantities) {
@@ -133,6 +170,7 @@
         } else {
             productTable = '<p>No valid products found.</p>';
         }
+
 const printLayout = `
            <html>
                     <head>
