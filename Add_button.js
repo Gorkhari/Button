@@ -130,9 +130,9 @@
                 if (displayName || sku) {
                     productTable += `
                         <tr style="margin-bottom: 5px; height: 30px;">
-                            <td style="padding: 5px 10px;">${displayName}</td>
-                            <td style="padding: 5px 10px;">${sku}</td>
-                            <td style="padding: 5px 10px;">${quantity}</td>
+                            <td style="padding: 0 5px 0 10px;">${displayName}</td>
+                            <td>${sku}</td>
+                            <td style="padding: 0 5px 0 10px;">${quantity}</td>
                         </tr>
                     `;
                 }
