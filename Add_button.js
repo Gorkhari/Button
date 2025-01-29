@@ -222,7 +222,12 @@ const printLayout = `
          white-space: pre-line;
          flex-direction: row;
          justify-content: space-between;
-         font-size: 14px;
+         font-size: 13px;
+         width: 100%;
+        }
+
+        .deliveryNote-1, .deliveryNote-2, .deliveryNote-3 {
+            width: 33.3%;
         }
 
         .orderProducts {
