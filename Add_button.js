@@ -30,7 +30,7 @@
     function safeInitialize() {
         if (isInvoicePage()) {
             // Add a small delay to ensure all elements are rendered
-            setTimeout(addButtons, 1500);
+            setTimeout(addButtons, 2000);
         }
     }
     // Use multiple observation methods
