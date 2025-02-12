@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Add Print and Pick Slip Buttons to QuickBooks Invoice
 // @namespace    http://tampermonkey.net/
-// @version      1.8
-// @description  Adds "Print" and "Pick Slip" buttons to QuickBooks Invoice page
+// @version      1.9
+// @description  Adds "Print" and "Pick Slip" buttons to QuickBooks Invoice page, checks URL every minute to ensure buttons are removed if URL no longer matches
 // @author       Raj - Gorkhari
 // @match        https://qbo.intuit.com/*
 // @include      https://qbo.intuit.com/app/invoice?*
@@ -12,7 +12,8 @@
 
 (function() {
     'use strict';
-    // More robust URL and page detection
+
+    // Function to check if the current page is an invoice page
     function isInvoicePage() {
         const url = window.location.href;
         const invoiceSelectors = [
@@ -26,14 +27,50 @@
             invoiceSelectors.some(selector => document.querySelector(selector) !== null)
         );
     }
+
+    // Function to add the "Print" and "Pick Slip" buttons
+    function addButtons() {
+        if (!isInvoicePage()) return;
+
+        // Create buttons (example buttons, adjust as needed)
+        const printButton = document.createElement('button');
+        printButton.textContent = 'Print';
+        printButton.id = 'printButton';
+        printButton.onclick = function() { window.print(); };
+
+        const pickSlipButton = document.createElement('button');
+        pickSlipButton.textContent = 'Pick Slip';
+        pickSlipButton.id = 'pickSlipButton';
+        pickSlipButton.onclick = function() { alert('Pick Slip action'); };
+
+        // Add buttons to the page (adjust selector as needed)
+        const container = document.querySelector('.invoice-details-container');
+        if (container) {
+            container.appendChild(printButton);
+            container.appendChild(pickSlipButton);
+        }
+    }
+
+    // Function to remove the buttons
+    function removeButtons() {
+        const printButton = document.getElementById('printButton');
+        const pickSlipButton = document.getElementById('pickSlipButton');
+        if (printButton) printButton.remove();
+        if (pickSlipButton) pickSlipButton.remove();
+    }
+
     // Delay initialization to ensure page is fully loaded
     function safeInitialize() {
         if (isInvoicePage()) {
-            // Add a small delay to ensure all elements are rendered
+            // Add buttons if on invoice page
             setTimeout(addButtons, 2000);
+        } else {
+            // Remove buttons if not on invoice page
+            removeButtons();
         }
     }
-    // Use multiple observation methods
+
+    // Setup observers for history changes, popstate, and mutations
     function setupObservers() {
         // History API listener
         (function(history){
@@ -44,16 +81,27 @@
                 return result;
             };
         })(window.history);
+
         // Event listeners
         window.addEventListener('urlchange', safeInitialize);
         window.addEventListener('popstate', safeInitialize);
-        // Mutation observer
+
+        // Mutation observer for detecting page changes
         const observer = new MutationObserver(safeInitialize);
         observer.observe(document.body, {
             childList: true,
             subtree: true
         });
     }
+
+    // Periodic URL check every minute
+    setInterval(function() {
+        if (isInvoicePage()) {
+            addButtons();
+        } else {
+            removeButtons();
+        }
+    }, 60000); // Check every 60,000 milliseconds (1 minute)
 
     // Initial setup
     setupObservers();
