@@ -143,8 +143,11 @@
         const shippingAddress = document.getElementById('shippingAddress')?.value || '';
         const referenceNumberElement = document.querySelector('[data-qbo-bind="text: referenceNumber"]');
         const invoiceNumber = referenceNumberElement?.textContent?.trim() || '';
-        const invoiceDateInput = document.getElementById('uniqName_8_5');
-        const invoiceDate = invoiceDateInput?.value || '';
+        setTimeout(() => {
+            const invoiceDateInput = document.getElementById('uniqName_8_5');
+            const invoiceDate = invoiceDateInput?.value || '';
+            console.log('Fetched Invoice Date:', invoiceDate);
+        }, 1000);
 
         // Get form details
         const formElement = document.querySelector('.custom-form');
