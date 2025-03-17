@@ -116,7 +116,7 @@
         button.style.left = id === 'custom-print-button' ? '400px' : '500px';
         button.style.padding = '10px 20px';
         button.style.backgroundColor = '#00ab00';
-        button.style.color = 'white';
+        button.style.color = 'red';
         button.style.border = 'none';
         button.style.borderRadius = '5px';
         button.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
