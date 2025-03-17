@@ -143,9 +143,15 @@
         const shippingAddress = document.getElementById('shippingAddress')?.value || '';
         const referenceNumberElement = document.querySelector('[data-qbo-bind="text: referenceNumber"]');
         const invoiceNumber = referenceNumberElement?.textContent?.trim() || '';
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        today = dd + '/' + mm + '/' + yyyy;
         const invoiceDateInput = document.getElementById('uniqName_8_5');
-        const invoiceDate = invoiceDateInput?.value || '';
-            
+        const invoiceDate = invoiceDateInput?.value || today;
+
+
         // Get form details
         const formElement = document.querySelector('.custom-form');
         const formFields = Array.from(formElement.querySelectorAll('.custom-form-field'));
