@@ -147,10 +147,10 @@
         var dd = String(today.getDate()).padStart(2, '0');
         var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
         var yyyy = today.getFullYear();
-        today = dd + '/' + mm + '/' + yyyy;        
+        today = dd + '/' + mm + '/' + yyyy;
         const invoiceDateInput = document.getElementById('uniqName_8_5');
         const invoiceDate = invoiceDateInput?.value || today;
-        
+
         // Get form details
         const formElement = document.querySelector('.custom-form');
         const formFields = Array.from(formElement.querySelectorAll('.custom-form-field'));
@@ -362,6 +362,9 @@ const printLayout = `
             ${productTable}
         </div>
         <hr/>
+        <div class="input-group mb-3" style="display:flex; justify-content: flex-end;">
+  <span class="input-group-text">Warehouse Associate : _______________.</span>
+</div>
     </div>
 </body>
 </html>
