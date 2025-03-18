@@ -357,8 +357,9 @@ const printLayout = `
             ${productTable}
         </div>
         <hr/>
-        <div class="input-group mb-3" style="display:flex; justify-content: flex-end;">
-  <span class="input-group-text">Warehouse Associate : _______________.</span>
+        <div class="input-group mb-3" style="display:flex; justify-content: space-between;">
+  <span class="input-group-text">Picked By : _______________.</span>
+  <span class="input-group-text">Checked By : _______________.</span>
 </div>
     </div>
 </body>
