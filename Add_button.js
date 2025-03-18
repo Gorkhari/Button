@@ -116,7 +116,7 @@
         button.style.left = id === 'custom-print-button' ? '400px' : '500px';
         button.style.padding = '10px 20px';
         button.style.backgroundColor = '#00ab00';
-        button.style.color = 'red';
+        button.style.color = 'Black';
         button.style.border = 'none';
         button.style.borderRadius = '5px';
         button.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
@@ -143,13 +143,8 @@
         const shippingAddress = document.getElementById('shippingAddress')?.value || '';
         const referenceNumberElement = document.querySelector('[data-qbo-bind="text: referenceNumber"]');
         const invoiceNumber = referenceNumberElement?.textContent?.trim() || '';
-        var today = new Date();
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-        var yyyy = today.getFullYear();
-        today = dd + '/' + mm + '/' + yyyy;
-        const invoiceDateInput = document.getElementById('uniqName_8_5');
-        const invoiceDate = invoiceDateInput?.value || today;
+        const invoiceDateInput = document.querySelector('.dijitDateTextBox input.dijitInputInner');
+        const invoiceDate = invoiceDateInput ? invoiceDateInput.value : '';
 
         // Get form details
         const formElement = document.querySelector('.custom-form');
