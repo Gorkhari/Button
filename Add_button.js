@@ -178,9 +178,9 @@
                 if (displayName || sku) {
                     productTable += `
                         <tr style="margin-bottom: 5px; height: 30px;">
-                            <td style="padding: 0 5px 0 10px;">${displayName}</td>
+                            <td>${displayName}</td>
                             <td>${sku}</td>
-                            <td style="padding: 0 5px 0 10px;">${quantity}</td>
+                            <td>${quantity}</td>
                         </tr>
                     `;
                 }
@@ -192,9 +192,9 @@
             skuMap.forEach((value, key) => {
                 productTable += `
                     <tr style="margin-bottom: 5px; height: 30px;">
-                        <td style="padding: 5px 10px;">${value.productName}</td>
-                        <td style="padding: 5px 10px;">${key}</td>
-                        <td style="padding: 5px 10px;">${value.quantity}</td>
+                        <td>${value.productName}</td>
+                        <td>${key}</td>
+                        <td>${value.quantity}</td>
                     </tr>
                 `;
             });
@@ -226,10 +226,6 @@ const printLayout = `
          .product-table tr {
                 margin-bottom: 10px;
                 height: 30px;
-            }
-
-            .product-table td {
-                padding: 5px 10px;
             }
 
         body {
